@@ -14,8 +14,15 @@ public:
 
       /* funcion de configuracion*/
       void setup(int baud_rate,int parity, int stopbit);
-      /* funcion de encendido*/
-      bool encender(); /* devuelve true si encendio correctamente*/
+      /* funcion de encendido devuelve true si encendió*/
+      bool encender();
+      /* function wrappers del puerto serie*/
+      void println(char *dato);
+      void print(char *dato);
+      int available();
+      char read();
+
+
 
 private:
   bool conectado;
