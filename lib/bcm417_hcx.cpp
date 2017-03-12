@@ -1,4 +1,4 @@
-#include "Arduino.h"  /* Importar todas las funciones de Arduino*/
+#include <Arduino.h>  /* Importar todas las funciones de Arduino*/
 #include "bcm417_hcx.hpp"
 #include <stdio.h> // for size_t
 /* Constructores */
@@ -46,12 +46,81 @@ bcm417_hcx::bcm417_hcx(int port,int baud,int power_pin,int key_pin ){
 
 
 };
-bool bcm417_hcx::encender(){
-    digitalWrite(pin_power,HIGH);
-    // se necesita una rutina para verificar si encendió
-    return true;
-};
+void bcm417_hcx::beginConf(){
+/* comienza el ciclo de configuracion */
 
+  int time_out=1000;
+  String buff;
+  /* colocamos el modulo en modo AT completo*/
+  digitalWrite(pin_power,LOW);
+  digitalWrite(pin_key,HIGH);
+  delay(5);
+  digitalWrite(pin_power,HIGH);
+  delay(10);
+  curSerial->begin(MASTER_BAUDRATE);
+  curSerial->print("AT");
+  curSerial->print(CR_LF);
+  while (curSerial->available()>3 ){   //deberia ser 'OK\r\n'
+
+      buff = curSerial->readStringUntil('\n');
+      if (buff.equals("OK")){
+          // esta conectado
+        on_config=true;
+        break;
+      } else
+      {
+        on_config=false;
+        break;
+      };
+      if (--time_out<1) {
+        on_config=false;
+        break;
+      };
+  }
+
+
+};
+int bcm417_hcx::getBTMode(){
+  return mode;
+};
+void bcm417_hcx::setBTMode(int smode){
+  switch (smode) {
+    case BT_MODE_MASTER:
+    setMaster();
+    break;
+    case BT_MODE_SLAVE:
+    setSlave();
+    break;
+  }
+
+
+
+};
+void setMaster(){
+  curSerial->print("AT+RMAAD");
+  curSerial->print(CR_LF);
+  curSerial->print("AT+ROLE=1");
+  curSerial->print(CR_LF);
+  curSerial->print("AT+RESET");
+  curSerial->print(CR_LF);
+  delay(10);
+  curSerial->print("AT+CMODE=0");
+  curSerial->print(CR_LF);
+  curSerial->print("AT+INQM=0,5,5");
+  curSerial->print(CR_LF);
+  curSerial->print("AT+INQM=0,5,5"); // debe retorna la lista de dispositivos
+  curSerial->print(CR_LF);
+  /*
+  AT+RMAAD Clear any paired devices
+  AT+ROLE=1 Set mode to Master
+  AT+RESET After changing role, reset is required
+  AT+CMODE=0 Allow connection to any address (I have been told this is wrong and CMODE=1 sets "any address"
+  AT+INQM=0,5,5 Inquire mode - Standard, stop after 5 devices found or after 5 seconds
+  AT+PSWD=1234 Set PIN. Should be same as slave device
+  AT+INIT Start Serial Port Profile (SPP) ( If Error(17) returned - ignore as profile already loaded)
+  AT+INQ Start searching for devices
+  */
+};
 int bcm417_hcx::available(){
   if (conectado) return curSerial->available();
   return 0;

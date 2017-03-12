@@ -1,10 +1,12 @@
 // encabezado
 #ifndef BCM417_HCX_H
-#include "Arduino.h"
+#include <Arduino.h>
 #include <stdio.h> // for size_t
 #define BCM417_HCX_H
 #define DEFAULT_BAUDRATE 9600  // Baud rate por defecto del modulo
 #define MASTER_BAUDRATE 38400  // baud rate para reconfigurar el modulo
+#define CR_LF "\r\n"
+
 /* Modos Bluetooth*/
 #define BT_MODE_MASTER 1
 #define BT_MODE_SLAVE  0
@@ -27,11 +29,9 @@ public:
 
       /* funcion de configuracion*/
       void setup(int baud_rate,int parity, int stopbit);
-      /* funcion de encendido devuelve true si encendió*/
-      bool encender();
       // nombre del dispositivo Bluetooth
       int getBTMode();
-      void setBTMode(int mode);
+      void setBTMode(int smode);
       int getCMODE();
       void setCMODE(int cmode);
       String getName();
@@ -42,7 +42,7 @@ public:
       void endConf(); // Al llamar esta funcion se envian las nuevas confuraciones al modulo
       String getBTAddr(); // obtiene la direccion del dispositivo
       bool pair(String pair_device, String passwd);  // en modo master indica a que modulo aparerse
-      
+
 
       /* function wrappers del puerto serie*/ //
       int available();
@@ -91,6 +91,8 @@ private:
   int mode;
   int cmode;
   bool on_config;  // flag para saber si esta en modo confugracion
+  void setMaster();
+  void setSlave();
 
 };
 
