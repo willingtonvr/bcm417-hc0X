@@ -2,6 +2,7 @@
 #ifndef BCM417_HCX_H
 #include <Arduino.h>
 #include <stdio.h> // for size_t
+#include <SoftwareSerial.h>
 #define BCM417_HCX_H
 #define DEFAULT_BAUDRATE 9600  // Baud rate por defecto del modulo
 #define MASTER_BAUDRATE 38400  // baud rate para reconfigurar el modulo
@@ -25,7 +26,7 @@ public:
       /* Constructor por defecto */
       bcm417_hcx();
       /* Constructor para seleccionar el puerto, el puerto de encendido y el KEY */
-      bcm417_hcx(int port,int baud,int power_pin,int key_pin );
+      bcm417_hcx(uint8_t port,uint8_t baud,uint8_t power_pin,uint8_t key_pin,uint8_t sser_rx, uint8_t sser_tx );
 
       /* funcion de configuracion*/
       void setup(int baud_rate,int parity, int stopbit);
@@ -84,7 +85,10 @@ private:
   int pin_power;
   int s_port;
   int baud_rate;
-  HardwareSerial * curSerial;
+  HardwareSerial *HSerial;
+  SoftwareSerial *SSerial;
+  Stream *curSerial;
+
   const char *passwd="1234";
   String name;
   String BTAddr;
@@ -93,6 +97,7 @@ private:
   bool on_config;  // flag para saber si esta en modo confugracion
   void setMaster();
   void setSlave();
+  bool wait_response();
 
 };
 
