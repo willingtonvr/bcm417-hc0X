@@ -15,6 +15,7 @@ bcm417_hcx::bcm417_hcx(uint8_t port,uint8_t baud,uint8_t power_pin,uint8_t key_p
   baud_rate=baud;
   pin_key=key_pin;
   pin_power=power_pin;
+  passwd="1234";
   // arrancamos con el modulo apagado
   pinMode(pin_power,OUTPUT);
   pinMode(pin_key, OUTPUT);
@@ -187,6 +188,13 @@ String bcm417_hcx::listDevices(){
 };
 String bcm417_hcx::getBTAddr(){
   return this->BTAddr;
+};
+String bcm417_hcx::getPWD(){
+  return passwd;
+};
+void bcm417_hcx::setPWD(String newPIN){
+  passwd=newPIN;
+
 };
 
 size_t bcm417_hcx::readBytesUntil( char terminator, char *buffer, size_t length) {if (conectado) return curSerial->readBytesUntil( terminator, buffer, length); };  // as readBytes with terminator character

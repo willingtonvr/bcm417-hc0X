@@ -43,6 +43,8 @@ public:
       void endConf(); // Al llamar esta funcion se envian las nuevas confuraciones al modulo
       String getBTAddr(); // obtiene la direccion del dispositivo
       bool pair(String pair_device, String passwd);  // en modo master indica a que modulo aparerse
+      String getPWD();
+      void setPWD(String newPIN);
 
 
       /* function wrappers del puerto serie*/ //
@@ -89,7 +91,7 @@ private:
   SoftwareSerial *SSerial;
   Stream *curSerial;
 
-  const char *passwd="1234";
+  String passwd;
   String name;
   String BTAddr;
   int mode;
